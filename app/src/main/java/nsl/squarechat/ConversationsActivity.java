@@ -129,24 +129,30 @@ public class ConversationsActivity extends ActionBarActivity {
             queries.add(query);
             queries.add(query2);
             ParseQuery<Message> joint = ParseQuery.or(queries);
+            joint.include("pointer to _user table");
 
             final ArrayList<ParseUser> chattingTo = new ArrayList<>();
+
+            final ConversationAdapter adapter = new ConversationAdapter(getActivity() , R.layout.conversation_item, chattingTo);
+
             joint.findInBackground(new FindCallback<Message>() {
                 @Override
                 public void done(List<Message> messages, com.parse.ParseException e) {
+                    if(messages == null)return;
                     for(Message m : messages){
-                        /*if(!m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
-                            chattingTo.add(m.getFrom());
+                        if(!m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
+                            if(!chattingTo.contains(m.getFrom()))
+                                chattingTo.add(m.getFrom());
 
                         if(!m.getTo().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
-                            chattingTo.add(m.getTo());*/
-                        if(!chattingTo.contains(m.getTo())) chattingTo.add(m.getTo());
-                        if(!chattingTo.contains(m.getFrom())) chattingTo.add(m.getFrom());
+                            if(!chattingTo.contains(m.getTo()))
+                                chattingTo.add(m.getTo());
+
+                        adapter.notifyDataSetChanged();
                     }
                 }
             });
 
-            final ConversationAdapter adapter = new ConversationAdapter(getActivity() ,R.layout.conversation_item, chattingTo);
             ListView ls = (ListView) rootView.findViewById(R.id.conversations);
             ls.setAdapter(adapter);
 

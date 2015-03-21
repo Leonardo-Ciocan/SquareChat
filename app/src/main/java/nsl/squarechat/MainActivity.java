@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
+import android.os.CountDownTimer;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -40,6 +41,9 @@ import java.util.UUID;
 public class MainActivity extends ActionBarActivity {
 
     private ActionBarDrawerToggle toggle;
+    private SquareView currentSquare;
+    private LinearLayout holder;
+    private FloatingActionButton send;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,59 +91,26 @@ public class MainActivity extends ActionBarActivity {
         };
         toggle.setDrawerIndicatorEnabled(true);
         drawerLayout.setDrawerListener(toggle);
-        
-        final SquareView currentSquare = (SquareView) findViewById(R.id.currentSquare);
 
-        final LinearLayout holder = (LinearLayout) findViewById(R.id.holder);
-        final FloatingActionButton send = (FloatingActionButton) findViewById(R.id.send);
+        currentSquare = (SquareView) findViewById(R.id.currentSquare);
 
+        holder = (LinearLayout) findViewById(R.id.holder);
+        send = (FloatingActionButton) findViewById(R.id.send);
 
-        final ParseQuery<Message> innerQuery = new ParseQuery<Message>("Message");
-        innerQuery.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
-        innerQuery.whereEqualTo("to", Core.ChattingTo.getObjectId());
+        checkOnline();
 
-        final ParseQuery<Message> innerQuery2 = new ParseQuery<Message>("Message");
-        innerQuery2.whereEqualTo("to", Core.ChattingTo.getUsername());
-        innerQuery2.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
+        new CountDownTimer(1000,1000){
 
-        ArrayList ls = new ArrayList();
-        ls.add(innerQuery);
-        ls.add(innerQuery2);
-        ParseQuery<Message> query = ParseQuery.or(ls);
-
-
-        //ParseQuery query = new ParseQuery("ClassA");
-        //query.whereMatchesQuery("pointer-column-to-classB", innerQuery);
-        query.findInBackground(new FindCallback<Message>() {
             @Override
-            public void done(List<Message> parseUsers, com.parse.ParseException e) {
-                for (Message m : parseUsers) {
-                    ConversationSection section = new ConversationSection(MainActivity.this);
-                    byte[] imageAsBytes = Base64.decode(m.getSquare().getBytes() , Base64.DEFAULT);
-
-                    Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
-
-                    section.init(b,m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()) ?
-                        section.ME : section.OTHER);
-                    holder.addView(section);
-
-                }
-
-                Thread thread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            sleep(100);
-                            ((ScrollView) holder.getParent()).fullScroll(ScrollView.FOCUS_DOWN);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                };
-
-                thread.start();
+            public void onTick(long millisUntilFinished) {
+                checkOnline();
             }
-        });
+
+            @Override
+            public void onFinish() {
+
+            }
+        }.start();
 
         SeekBar thickness = (SeekBar) findViewById(R.id.thickness);
         thickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -170,7 +141,7 @@ public class MainActivity extends ActionBarActivity {
                 //v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
                 currentSquare.draw(c);
                 ConversationSection section = new ConversationSection(MainActivity.this);
-                section.init(b,ConversationSection.ME);
+                section.init(b, ConversationSection.ME);
 
                 holder.addView(section);
                 Thread thread = new Thread() {
@@ -186,24 +157,24 @@ public class MainActivity extends ActionBarActivity {
                 };
 
                 thread.start();
-                    currentSquare.lines.clear();
-                    currentSquare.invalidate();
+                currentSquare.lines.clear();
+                currentSquare.invalidate();
 
-                    Message newMessage = new Message();
-                    newMessage.setFrom(ParseUser.getCurrentUser());
-                    newMessage.setTo(Core.ChattingTo);
+                Message newMessage = new Message();
+                newMessage.setFrom(ParseUser.getCurrentUser());
+                newMessage.setTo(Core.ChattingTo);
 
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    b.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] byteArray = byteArrayOutputStream .toByteArray();
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                b.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                byte[] byteArray = byteArrayOutputStream.toByteArray();
 
-                    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-                    newMessage.setSquare(encoded);
+                newMessage.setSquare(encoded);
 
-                    newMessage.saveInBackground();
-                }
-            });
+                newMessage.saveInBackground();
+            }
+        });
 
         LinearLayout colors = (LinearLayout) findViewById(R.id.colorHolder);
         for(int x =0; x< colors.getChildCount();x++){
@@ -216,6 +187,58 @@ public class MainActivity extends ActionBarActivity {
         }
         onPostCreate(null);
 
+    }
+
+    private void checkOnline() {
+
+        final ParseQuery<Message> innerQuery = new ParseQuery<Message>("Message");
+        innerQuery.whereEqualTo("from", ParseUser.getCurrentUser());
+        innerQuery.whereEqualTo("to", Core.ChattingTo);
+
+        final ParseQuery<Message> innerQuery2 = new ParseQuery<Message>("Message");
+        innerQuery2.whereEqualTo("to", Core.ChattingTo.getUsername());
+        innerQuery2.whereEqualTo("from", ParseUser.getCurrentUser());
+
+        ArrayList ls = new ArrayList();
+        ls.add(innerQuery);
+        ls.add(innerQuery2);
+        ParseQuery<Message> query = ParseQuery.or(ls);
+
+
+        //ParseQuery query = new ParseQuery("ClassA");
+        //query.whereMatchesQuery("pointer-column-to-classB", innerQuery);
+        query.findInBackground(new FindCallback<Message>() {
+            @Override
+            public void done(List<Message> parseUsers, com.parse.ParseException e) {
+                if(parseUsers == null) return;
+                holder.removeAllViews();
+                for (Message m : parseUsers) {
+                    ConversationSection section = new ConversationSection(MainActivity.this);
+                    byte[] imageAsBytes = Base64.decode(m.getSquare().getBytes() , Base64.DEFAULT);
+
+                    Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+
+                    section.init(b,m.getFrom() == (ParseUser.getCurrentUser()) ?
+                            section.ME : section.OTHER);
+                    holder.addView(section);
+
+                }
+
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            sleep(100);
+                            ((ScrollView) holder.getParent()).fullScroll(ScrollView.FOCUS_DOWN);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                thread.start();
+            }
+        });
     }
 
     @Override

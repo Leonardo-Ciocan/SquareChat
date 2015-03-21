@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -20,12 +21,15 @@ public class ConversationAdapter extends ArrayAdapter<ParseUser> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null){
-            convertView = View.inflate(getContext() , R.layout.conversation_item , parent);
+            convertView = View.inflate(getContext() , R.layout.conversation_item , null);
         }
 
         TextView tv = (TextView) convertView.findViewById(R.id.friend);
-        tv.setText(getItem(position).getUsername());
-
+        try {
+            tv.setText(getItem(position).fetchIfNeeded().getUsername());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
 
         return convertView;
