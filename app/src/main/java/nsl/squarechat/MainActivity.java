@@ -1,6 +1,8 @@
 package nsl.squarechat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v4.widget.DrawerLayout;
@@ -8,17 +10,27 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.r0adkll.slidr.Slidr;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Handler;
 
 
@@ -31,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Slidr.attach(this);
+        //Slidr.attach(this);
 
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -61,6 +73,54 @@ public class MainActivity extends ActionBarActivity {
 
         final LinearLayout holder = (LinearLayout) findViewById(R.id.holder);
         final FloatingActionButton send = (FloatingActionButton) findViewById(R.id.send);
+
+
+        final ParseQuery<Message> innerQuery = new ParseQuery<Message>("Message");
+        innerQuery.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
+        innerQuery.whereEqualTo("to", Core.ChattingTo.getObjectId());
+
+        final ParseQuery<Message> innerQuery2 = new ParseQuery<Message>("Message");
+        innerQuery2.whereEqualTo("to", Core.ChattingTo.getUsername());
+        innerQuery2.whereEqualTo("from", ParseUser.getCurrentUser().getObjectId());
+
+        ArrayList ls = new ArrayList();
+        ls.add(innerQuery);
+        ls.add(innerQuery2);
+        ParseQuery<Message> query = ParseQuery.or(ls);
+
+
+        //ParseQuery query = new ParseQuery("ClassA");
+        //query.whereMatchesQuery("pointer-column-to-classB", innerQuery);
+        query.findInBackground(new FindCallback<Message>() {
+            @Override
+            public void done(List<Message> parseUsers, com.parse.ParseException e) {
+                for (Message m : parseUsers) {
+                    ConversationSection section = new ConversationSection(MainActivity.this);
+                    byte[] imageAsBytes = Base64.decode(m.getSquare().getBytes() , Base64.DEFAULT);
+
+                    Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+
+                    section.init(b,m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()) ?
+                        section.ME : section.OTHER);
+                    holder.addView(section);
+
+                }
+
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            sleep(100);
+                            ((ScrollView) holder.getParent()).fullScroll(ScrollView.FOCUS_DOWN);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                thread.start();
+            }
+        });
 
         SeekBar thickness = (SeekBar) findViewById(R.id.thickness);
         thickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -109,6 +169,20 @@ public class MainActivity extends ActionBarActivity {
                 thread.start();
                     currentSquare.lines.clear();
                     currentSquare.invalidate();
+
+                    Message newMessage = new Message();
+                    newMessage.setFrom(ParseUser.getCurrentUser());
+                    newMessage.setTo(Core.ChattingTo);
+
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    b.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] byteArray = byteArrayOutputStream .toByteArray();
+
+                    String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                    newMessage.setSquare(encoded);
+
+                    newMessage.saveInBackground();
                 }
             });
 

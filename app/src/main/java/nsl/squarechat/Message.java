@@ -2,6 +2,7 @@ package nsl.squarechat;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 @ParseClassName("Message")
 public class Message extends ParseObject {
@@ -11,17 +12,18 @@ public class Message extends ParseObject {
         return getString("square");
     }
 
-    public String getFrom() {
-        return getString("from");
+    public ParseUser getFrom() {
+        return getParseUser("from");
+
     }
-    public void setFrom(String userId) {
+    public void setFrom(ParseUser userId) {
         put("from", userId);
     }
 
-    public String getTo() {
-        return getString("to");
+    public ParseUser getTo() {
+        return getParseUser("to");
     }
-    public void setTo(String userId) {
+    public void setTo(ParseUser userId) {
         put("to", userId);
     }
 

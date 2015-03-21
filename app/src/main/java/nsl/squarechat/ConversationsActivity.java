@@ -2,6 +2,7 @@ package nsl.squarechat;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
@@ -22,6 +25,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -82,6 +86,10 @@ public class ConversationsActivity extends ActionBarActivity {
                                         Toast.makeText(getApplicationContext(),
                                                 "Couldn't find user"
                                                 , Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Core.ChattingTo = parseUsers.get(0);
+                                        Intent i = new Intent(ConversationsActivity.this , MainActivity.class);
+                                        startActivity(i);
                                     }
                                 }
                             });
@@ -109,6 +117,48 @@ public class ConversationsActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_conversations, container, false);
             toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
             ((ActionBarActivity)getActivity()).setSupportActionBar(toolbar);
+
+
+            ParseQuery<Message> query = new ParseQuery<Message>("Message");
+            query.whereEqualTo("from",ParseUser.getCurrentUser());
+
+            ParseQuery<Message> query2 = new ParseQuery<Message>("Message");
+            query2.whereEqualTo("to",ParseUser.getCurrentUser());
+
+            ArrayList<ParseQuery<Message>> queries = new ArrayList<>();
+            queries.add(query);
+            queries.add(query2);
+            ParseQuery<Message> joint = ParseQuery.or(queries);
+
+            final ArrayList<ParseUser> chattingTo = new ArrayList<>();
+            joint.findInBackground(new FindCallback<Message>() {
+                @Override
+                public void done(List<Message> messages, com.parse.ParseException e) {
+                    for(Message m : messages){
+                        /*if(!m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
+                            chattingTo.add(m.getFrom());
+
+                        if(!m.getTo().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
+                            chattingTo.add(m.getTo());*/
+                        if(!chattingTo.contains(m.getTo())) chattingTo.add(m.getTo());
+                        if(!chattingTo.contains(m.getFrom())) chattingTo.add(m.getFrom());
+                    }
+                }
+            });
+
+            final ConversationAdapter adapter = new ConversationAdapter(getActivity() ,R.layout.conversation_item, chattingTo);
+            ListView ls = (ListView) rootView.findViewById(R.id.conversations);
+            ls.setAdapter(adapter);
+
+            ls.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(getActivity() , MainActivity.class);
+                    Core.ChattingTo = adapter.getItem(position);
+                    startActivity(i);
+                }
+            });
+
             return rootView;
         }
     }
