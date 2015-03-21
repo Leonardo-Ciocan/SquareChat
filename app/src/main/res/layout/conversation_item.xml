@@ -2,18 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
 
-    android:layout_height="140dp">
+    android:layout_height="180dp">
 
     <nsl.squarechat.SquareView
         android:elevation="5dp"
         android:layout_gravity="center_vertical"
-        android:layout_width="130dp"
-        android:layout_height="130dp" />
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
 
     <TextView
         android:layout_margin="10dp"
-        android:textSize="20pt"
+        android:textSize="12pt"
+
         android:id="@+id/friend"
+        android:fontFamily="sans-serif-light"
+
         android:textColor="#000"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
