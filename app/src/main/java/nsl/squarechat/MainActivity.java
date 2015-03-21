@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,18 +21,20 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.getpebble.android.kit.PebbleKit;
 import com.melnykov.fab.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.r0adkll.slidr.Slidr;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
+
+import java.util.UUID;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -44,6 +47,22 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         //Slidr.attach(this);
+
+
+            // Launching my app
+
+            boolean connected = PebbleKit.isWatchConnected(getApplicationContext());
+
+            if(connected == true)
+            {
+                Log.i("wu", "Pebble is " + (connected ? "connected" : "not connected"));
+
+            }
+            else
+            {
+                Log.i("wu", "Pebble is not Connected!");
+                Log.i("wu", "Device compatibility: " + PebbleKit.areAppMessagesSupported(getApplicationContext()));
+            }
 
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
