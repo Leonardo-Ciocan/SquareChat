@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -33,7 +34,6 @@ import com.parse.ParseUser;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import java.util.UUID;
 
@@ -98,19 +98,19 @@ public class MainActivity extends ActionBarActivity {
         send = (FloatingActionButton) findViewById(R.id.send);
 
         checkOnline();
-
-        new CountDownTimer(1000,1000){
-
+        final Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
             @Override
-            public void onTick(long millisUntilFinished) {
+            public void run() {
                 checkOnline();
-            }
 
-            @Override
-            public void onFinish() {
-
+                handler.postDelayed(this, 800);
             }
-        }.start();
+        };
+        handler.postDelayed(runnable, 100);
+
+
+
 
         SeekBar thickness = (SeekBar) findViewById(R.id.thickness);
         thickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -190,19 +190,24 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void checkOnline() {
+        final ParseQuery<Message> innerQuery2 = ParseQuery.getQuery("Message");
+        innerQuery2.whereEqualTo("from", Core.ChattingTo);
+        innerQuery2.whereEqualTo("to", ParseUser.getCurrentUser());
 
-        final ParseQuery<Message> innerQuery = new ParseQuery<Message>("Message");
+
+        final ParseQuery<Message> innerQuery = ParseQuery.getQuery("Message");
         innerQuery.whereEqualTo("from", ParseUser.getCurrentUser());
         innerQuery.whereEqualTo("to", Core.ChattingTo);
 
-        final ParseQuery<Message> innerQuery2 = new ParseQuery<Message>("Message");
-        innerQuery2.whereEqualTo("to", Core.ChattingTo.getUsername());
-        innerQuery2.whereEqualTo("from", ParseUser.getCurrentUser());
 
-        ArrayList ls = new ArrayList();
+
+        ArrayList<ParseQuery<Message>> ls = new ArrayList<>();
         ls.add(innerQuery);
         ls.add(innerQuery2);
         ParseQuery<Message> query = ParseQuery.or(ls);
+        //query.include("pointer to _user table");
+        query.include("user");
+
 
 
         //ParseQuery query = new ParseQuery("ClassA");
@@ -213,6 +218,10 @@ public class MainActivity extends ActionBarActivity {
                 if(parseUsers == null) return;
                 holder.removeAllViews();
                 for (Message m : parseUsers) {
+                   /* if(m.getTo() != ParseUser.getCurrentUser() &&
+                       m.getFrom() != ParseUser.getCurrentUser())
+                        continue;*/
+
                     ConversationSection section = new ConversationSection(MainActivity.this);
                     byte[] imageAsBytes = Base64.decode(m.getSquare().getBytes() , Base64.DEFAULT);
 
@@ -221,7 +230,6 @@ public class MainActivity extends ActionBarActivity {
                     section.init(b,m.getFrom() == (ParseUser.getCurrentUser()) ?
                             section.ME : section.OTHER);
                     holder.addView(section);
-
                 }
 
                 Thread thread = new Thread() {
@@ -240,6 +248,11 @@ public class MainActivity extends ActionBarActivity {
             }
         });
     }
+
+    void handle(){
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
