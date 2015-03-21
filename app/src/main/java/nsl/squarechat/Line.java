@@ -7,8 +7,13 @@ import java.util.ArrayList;
 
 public class Line {
     ArrayList<PointF> points = new ArrayList<>();
-    Color color;
-    float width;
+    int color;
+    float width = 1f;
+
+    public Line(float t,int c){
+        width = t;
+        color = c;
+    }
 
     public ArrayList<PointF> getPoints() {
         return points;
@@ -18,11 +23,11 @@ public class Line {
         this.points = points;
     }
 
-    public Color getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(int color) {
         this.color = color;
     }
 

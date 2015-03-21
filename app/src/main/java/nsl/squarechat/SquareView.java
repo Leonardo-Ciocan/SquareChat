@@ -2,6 +2,7 @@ package nsl.squarechat;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
@@ -37,12 +38,16 @@ public class SquareView extends View {
         paint.setAntiAlias(true);
     }
 
+    public float Thickness = 2f;
+    public int color = Color.BLACK;
     Paint paint = new Paint();
     @Override
     public void draw(Canvas canvas) {
         super.draw(canvas);
 
         for(Line l : lines){
+            paint.setStrokeWidth(l.width);
+            paint.setColor(l.color);
             for(int x = 0; x< l.points.size()-1;x++){
                 PointF from = l.points.get(x);
                 PointF to = l.points.get(x+1);
@@ -56,7 +61,7 @@ public class SquareView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             down = true;
-            lines.add(new Line());
+            lines.add(new Line(Thickness,color));
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
             down = false;
