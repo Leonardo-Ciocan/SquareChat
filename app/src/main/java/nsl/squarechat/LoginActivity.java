@@ -3,8 +3,11 @@ package nsl.squarechat;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +21,8 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
+import java.io.ByteArrayOutputStream;
+
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -30,6 +35,7 @@ public class LoginActivity extends ActionBarActivity {
 
         // Enable Local Datastore.
         ParseObject.registerSubclass(Message.class);
+        ParseObject.registerSubclass(Avatar.class);
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, "HnSKRXnV2GNcrchc8QF3tSqs42rNMJRl4SRoCbch",
                 "xmIe34IZjp2mbWZ3QZySfoYd5F2KB1OYvT1QLszy");
@@ -63,27 +69,51 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
+        final SquareView squareView = (SquareView) findViewById(R.id.avatar);
         Button signup = (Button) findViewById(R.id.signup);
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ParseUser user = new ParseUser();
-                user.setUsername(username.getText().toString());
-                user.setPassword(password.getText().toString());
-                user.signUpInBackground(new SignUpCallback() {
-                    public void done(com.parse.ParseException e) {
-                        if (e == null) {
-                            Intent i = new Intent(LoginActivity.this , ConversationsActivity.class);
-                            startActivity(i);
-                        } else {
-                            Toast.makeText(getApplicationContext(),
-                                    "There was an error signing up."
-                                    , Toast.LENGTH_LONG).show();
+                if(squareView.getVisibility() == View.VISIBLE){
+                    final ParseUser user = new ParseUser();
+                    user.setUsername(username.getText().toString());
+                    user.setPassword(password.getText().toString());
+
+                    user.signUpInBackground(new SignUpCallback() {
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                Avatar avatar = new Avatar();
+                                Bitmap b = Bitmap.createBitmap(
+                                        squareView.getLayoutParams().width,
+                                        squareView.getLayoutParams().height,
+                                        Bitmap.Config.ARGB_8888);
+                                Canvas c = new Canvas(b);
+                                squareView.draw(c);
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                b.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                                byte[] byteArray = byteArrayOutputStream.toByteArray();
+
+                                String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                                avatar.setAvatar(encoded);
+                                avatar.setUser(user);
+                                avatar.saveInBackground();
+                                Intent i = new Intent(LoginActivity.this , ConversationsActivity.class);
+                                startActivity(i);
+                            } else {
+                                Toast.makeText(getApplicationContext(),
+                                        "There was an error signing up."
+                                        , Toast.LENGTH_LONG).show();
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                else {
+                    squareView.setVisibility(View.VISIBLE);
+                }
             }
         });
+
+
     }
 
 

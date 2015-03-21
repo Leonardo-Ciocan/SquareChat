@@ -11,17 +11,6 @@
         android:background="@color/accent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <TextView
-                android:textSize="10pt"
-                android:text="Chatting with X"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"/>
-        </LinearLayout>
     </android.support.v7.widget.Toolbar>
 
     <android.support.v4.widget.DrawerLayout
@@ -54,12 +43,14 @@
                 android:layout_gravity="bottom"
                 android:layout_width="fill_parent"
                 android:layout_height="205dp">
+
                 <nsl.squarechat.SquareView
                     android:id="@+id/currentSquare"
                     android:elevation="5dp"
+
                     android:layout_gravity="center"
                     android:layout_margin="10dp"
-                    android:background="#fff"
+                    android:background="@drawable/border_background"
                     android:layout_width="195dp"
                     android:layout_height="195dp" />
 
@@ -74,111 +65,26 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_send"
                     fab:fab_colorRipple="@color/accent"
+                >
+
+                </com.melnykov.fab.FloatingActionButton>
+
+                <com.melnykov.fab.FloatingActionButton
+                    android:id="@+id/edit"
+                    xmlns:fab="http://schemas.android.com/apk/res-auto"
+                    fab:fab_colorNormal="@color/accentDark"
+                    fab:fab_colorPressed="@color/accent"
+                    android:layout_margin="10dp"
+                    android:layout_gravity="left|center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_edit"
+                    fab:fab_colorRipple="@color/accent"
                     >
 
                 </com.melnykov.fab.FloatingActionButton>
 
-                <LinearLayout
-                    android:padding="5dp"
-                    android:orientation="vertical"
-                    android:layout_width="180dp"
-                    android:layout_height="fill_parent">
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Thickness"
-                        android:textColor="#000"/>
-                    <SeekBar
-                        android:progress="0"
-                        android:id="@+id/thickness"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content" />
-                    <TextView
-                        android:layout_marginTop="5dp"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Color"
-                        android:textColor="#000"/>
 
-                    <HorizontalScrollView
-                        android:layout_width="fill_parent"
-                        android:layout_height="60dp">
-
-                        <LinearLayout
-                            android:padding="5dp"
-                            android:id="@+id/colorHolder"
-                            android:orientation="horizontal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="fill_parent">
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#5f3"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#c6f"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#ff1"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#000"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#fff"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#31c"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-
-                            <RelativeLayout
-                                android:layout_marginRight="5dp"
-                                android:elevation="5dp"
-                                android:background="#f33"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp">
-
-                            </RelativeLayout>
-                        </LinearLayout>
-
-
-
-                    </HorizontalScrollView>
-
-                </LinearLayout>
             </FrameLayout>
         </FrameLayout>
 
@@ -191,8 +97,8 @@
             android:background="#fff">
 
             <RelativeLayout
-                android:layout_width="130dp"
-                android:layout_height="130dp"
+                android:layout_width="145dp"
+                android:layout_height="145dp"
                 android:elevation="5dp"
                 android:layout_margin="5dp"
                 android:layout_gravity="center_horizontal"

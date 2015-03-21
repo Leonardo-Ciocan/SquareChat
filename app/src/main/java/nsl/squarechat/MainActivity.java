@@ -1,5 +1,8 @@
 package nsl.squarechat;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,10 +20,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getpebble.android.kit.PebbleKit;
@@ -45,6 +51,7 @@ public class MainActivity extends ActionBarActivity {
     private LinearLayout holder;
     private FloatingActionButton send;
 
+    int last = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +79,7 @@ public class MainActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        toolbar.setTitle("Chatting with X");
+        toolbar.setTitle("Chatting with " + Core.ChattingTo.getUsername());
 
         setSupportActionBar(toolbar);
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
@@ -112,7 +118,7 @@ public class MainActivity extends ActionBarActivity {
 
 
 
-        SeekBar thickness = (SeekBar) findViewById(R.id.thickness);
+        /*SeekBar thickness = (SeekBar) findViewById(R.id.thickness);
         thickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -128,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
 
             }
-        });
+        });*/
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,8 +148,8 @@ public class MainActivity extends ActionBarActivity {
                 currentSquare.draw(c);
                 ConversationSection section = new ConversationSection(MainActivity.this);
                 section.init(b, ConversationSection.ME);
-
                 holder.addView(section);
+
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -176,7 +182,7 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        LinearLayout colors = (LinearLayout) findViewById(R.id.colorHolder);
+        /*LinearLayout colors = (LinearLayout) findViewById(R.id.colorHolder);
         for(int x =0; x< colors.getChildCount();x++){
             colors.getChildAt(x).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -184,7 +190,39 @@ public class MainActivity extends ActionBarActivity {
                     currentSquare.color =((ColorDrawable) v.getBackground()).getColor();
                 }
             });
-        }
+        }*/
+
+        final FloatingActionButton edit = (FloatingActionButton) findViewById(R.id.edit);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog dialog = new AlertDialog.Builder(MainActivity.this).create();
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                //dialog.setContentView(R.layout.edit_dialog);
+                View vx = View.inflate(MainActivity.this , R.layout.edit_dialog , null);
+                dialog.setView(vx);
+                dialog.setTitle("Edit");
+
+
+                final SeekBar progress = (SeekBar)vx.findViewById(R.id.thickness);
+                LinearLayout colors = (LinearLayout) vx.findViewById(R.id.colorHolder);
+                for(int x =0; x< colors.getChildCount();x++){
+                    colors.getChildAt(x).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            currentSquare.color =((ColorDrawable) v.getBackground()).getColor();
+                        }
+                    });
+                }
+                dialog.setButton(dialog.BUTTON_POSITIVE , "Update" , new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        currentSquare.Thickness = progress.getProgress() / 100.0f * 6f;
+                    }
+                });
+                dialog.show();
+            }
+        });
         onPostCreate(null);
 
     }
@@ -207,6 +245,7 @@ public class MainActivity extends ActionBarActivity {
         ParseQuery<Message> query = ParseQuery.or(ls);
         //query.include("pointer to _user table");
         query.include("user");
+        query.addAscendingOrder("updatedAt");
 
 
 
@@ -216,6 +255,8 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void done(List<Message> parseUsers, com.parse.ParseException e) {
                 if(parseUsers == null) return;
+                if(last == parseUsers.size())return;
+                last = parseUsers.size();
                 holder.removeAllViews();
                 for (Message m : parseUsers) {
                    /* if(m.getTo() != ParseUser.getCurrentUser() &&

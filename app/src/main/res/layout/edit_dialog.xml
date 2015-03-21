@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    >
+
+    <LinearLayout
+
+        android:paddingLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Thickness"
+            android:textColor="#000"/>
+        <SeekBar
+            android:progress="0"
+            android:id="@+id/thickness"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Color"
+            android:textColor="#000"/>
+
+        <HorizontalScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="60dp">
+
+            <LinearLayout
+                android:padding="5dp"
+                android:id="@+id/colorHolder"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent">
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#5f3"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#c6f"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#ff1"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#000"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#fff"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#31c"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginRight="5dp"
+                    android:elevation="5dp"
+                    android:background="#f33"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp">
+                </RelativeLayout>
+            </LinearLayout>
+
+
+
+        </HorizontalScrollView>
+
+    </LinearLayout>
+</LinearLayout>
