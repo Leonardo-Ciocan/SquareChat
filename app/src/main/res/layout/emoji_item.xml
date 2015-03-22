@@ -4,8 +4,9 @@
     android:background="#fff"
     android:layout_height="200dp">
     <ImageView
+        android:layout_margin="10dp"
         android:layout_gravity="center"
         android:id="@+id/emoji"
-        android:layout_width="200dp"
-        android:layout_height="200dp" />
+        android:layout_width="180"
+        android:layout_height="180" />
 </FrameLayout>

@@ -36,6 +36,7 @@ public class SquareView extends View {
         paint.setStrokeWidth(3.5f);
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         paint.setAntiAlias(true);
+        paint.setStrokeCap(Paint.Cap.ROUND);
     }
 
     public float Thickness = 2f;

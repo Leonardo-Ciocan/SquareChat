@@ -6,16 +6,23 @@
     android:fitsSystemWindows="true"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
+
         android:background="@color/accent"
         android:layout_width="fill_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         android:layout_height="wrap_content">
     </android.support.v7.widget.Toolbar>
 
 
         <FrameLayout
 
+            android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
             android:id="@+id/contentHolder"
             android:background="#fff"
             android:layout_width="fill_parent"
@@ -108,6 +115,7 @@
                     fab:fab_colorNormal="@color/accentDark"
                     fab:fab_icon="@drawable/ic_smiley"
                     fab:fab_title="Label on the right"
+
                     fab:fab_size="mini"
                     fab:fab_colorPressed="@color/accentDark"/>
 

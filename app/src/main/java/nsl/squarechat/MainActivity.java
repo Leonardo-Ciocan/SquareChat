@@ -192,7 +192,6 @@ public class MainActivity extends ActionBarActivity {
                 dialog.setView(vx);
                 dialog.setTitle("Edit");
 
-
                 final SeekBar progress = (SeekBar)vx.findViewById(R.id.thickness);
                 LinearLayout colors = (LinearLayout) vx.findViewById(R.id.colorHolder);
                 for(int x =0; x< colors.getChildCount();x++){
