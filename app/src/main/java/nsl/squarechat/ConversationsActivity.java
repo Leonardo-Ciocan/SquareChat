@@ -128,7 +128,7 @@ public class ConversationsActivity extends ActionBarActivity {
             toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
             ((ActionBarActivity)getActivity()).setSupportActionBar(toolbar);
 
-            toolbar.setTitle( ParseUser.getCurrentUser().getUsername() +" 's square chats");
+            ((ActionBarActivity)getActivity()).getSupportActionBar().setTitle( ParseUser.getCurrentUser().getUsername() +" 's square chats");
 
             ParseQuery<Message> query = new ParseQuery<Message>("Message");
             query.whereEqualTo("from",ParseUser.getCurrentUser());

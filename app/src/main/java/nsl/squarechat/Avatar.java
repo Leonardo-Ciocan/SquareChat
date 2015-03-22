@@ -22,4 +22,12 @@ public class Avatar extends ParseObject {
     public void setAvatar(String data){
         put("data" , data);
     }
+
+    public String getFavorite(){
+        return  getString("favorite");
+    }
+
+    public void setFavorite(String data){
+        put("favorite" , data);
+    }
 }

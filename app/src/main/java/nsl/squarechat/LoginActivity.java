@@ -12,6 +12,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +51,7 @@ public class LoginActivity extends ActionBarActivity {
             Intent i = new Intent(LoginActivity.this , ConversationsActivity.class);
             startActivity(i);
         }
-        Button login = (Button) findViewById(R.id.login);
+        final Button login = (Button) findViewById(R.id.login);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,9 +71,11 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
+        final ImageView logo = (ImageView) findViewById(R.id.logo);
 
 
         final SquareView squareView = (SquareView) findViewById(R.id.avatar);
+        final SquareView favorite = (SquareView) findViewById(R.id.favorite);
         Button signup = (Button) findViewById(R.id.signup);
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +100,20 @@ public class LoginActivity extends ActionBarActivity {
                                 byte[] byteArray = byteArrayOutputStream.toByteArray();
 
                                 String encoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
+                                Bitmap b2 = Bitmap.createBitmap(
+                                        favorite.getLayoutParams().width,
+                                        favorite.getLayoutParams().height,
+                                        Bitmap.Config.ARGB_8888);
+                                Canvas c2 = new Canvas(b2);
+                                favorite.draw(c2);
+                                ByteArrayOutputStream byteArrayOutputStream2 = new ByteArrayOutputStream();
+                                b2.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream2);
+                                byte[] byteArray2 = byteArrayOutputStream2.toByteArray();
+
+                                String encoded2 = Base64.encodeToString(byteArray2, Base64.DEFAULT);
+
+                                avatar.setFavorite(encoded2);
                                 avatar.setAvatar(encoded);
                                 avatar.setUser(user);
                                 avatar.saveInBackground();
@@ -111,8 +129,14 @@ public class LoginActivity extends ActionBarActivity {
                 }
                 else {
                     squareView.setVisibility(View.VISIBLE);
+                    favorite.setVisibility(View.VISIBLE);
+
+                    logo.setVisibility(View.GONE);
+                    login.setVisibility(View.GONE);
                     TextView  labelavatar = (TextView) findViewById(R.id.labelAvatar);
                     labelavatar.setVisibility(View.VISIBLE);
+                    TextView  favoriteLabel = (TextView) findViewById(R.id.favoriteLabel);
+                    favoriteLabel.setVisibility(View.VISIBLE);
                 }
             }
         });

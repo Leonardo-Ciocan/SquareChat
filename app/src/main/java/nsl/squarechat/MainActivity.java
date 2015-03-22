@@ -381,6 +381,11 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }
 
+        if(id == R.id.profile){
+            Intent i = new Intent(this,ProfileActivity.class);
+            startActivity(i);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

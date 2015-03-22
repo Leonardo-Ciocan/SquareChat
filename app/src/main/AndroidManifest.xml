@@ -20,7 +20,6 @@
         <activity
             android:name=".ConversationsActivity"
             android:label="@string/title_activity_conversations" >
-
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -30,6 +29,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ProfileActivity"
+            android:label="@string/title_activity_profile" >
         </activity>
     </application>
 
