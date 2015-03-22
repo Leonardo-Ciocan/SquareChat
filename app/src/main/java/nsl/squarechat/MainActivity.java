@@ -46,7 +46,6 @@ import java.util.List;
 
 import java.util.UUID;
 
-
 public class MainActivity extends ActionBarActivity {
     public static SharedPreferences sharedPref ;
     private ActionBarDrawerToggle toggle;

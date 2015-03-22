@@ -1,13 +1,22 @@
 package nsl.squarechat;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.getpebble.android.kit.PebbleKit;
 import com.parse.FindCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -114,7 +124,7 @@ public class ConversationsActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_conversations, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_conversations, container, false);
             toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
             ((ActionBarActivity)getActivity()).setSupportActionBar(toolbar);
 
@@ -139,17 +149,23 @@ public class ConversationsActivity extends ActionBarActivity {
                 @Override
                 public void done(List<Message> messages, com.parse.ParseException e) {
                     if(messages == null)return;
+                    Message lastMessage = null;
                     for(Message m : messages){
                         if(!m.getFrom().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
-                            if(!chattingTo.contains(m.getFrom()))
+                            if(!chattingTo.contains(m.getFrom())) {
+                               lastMessage = m;
                                 chattingTo.add(m.getFrom());
-
+                            }
                         if(!m.getTo().getObjectId().equals(ParseUser.getCurrentUser().getObjectId()))
-                            if(!chattingTo.contains(m.getTo()))
+                            if(!chattingTo.contains(m.getTo())){
+
                                 chattingTo.add(m.getTo());
 
+                            }
+
                         adapter.notifyDataSetChanged();
-                    }
+                   }
+                    notification(lastMessage,rootView);
                 }
             });
 
@@ -166,6 +182,31 @@ public class ConversationsActivity extends ActionBarActivity {
             });
 
             return rootView;
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void notification(Message m, View view)    {
+        NotificationManager mNotificationManager = (NotificationManager) view.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+// Sets an ID for the notification, so it can be updated
+        int notifyID = 1;
+        NotificationCompat.Builder mNotifyBuilder = new NotificationCompat.Builder(view.getContext())
+                .setContentTitle("New Message")
+                .setContentText("You've received new messages.");
+        // Because the ID remains unchanged, the existing notification is
+        // updated.
+        mNotificationManager.notify(
+                notifyID,
+                mNotifyBuilder.build());
+    }
+    public static Bitmap StringToBitMap(String encodedString){
+        try{
+            byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        }catch(Exception e){
+            e.getMessage();
+            return null;
         }
     }
 }
