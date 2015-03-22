@@ -25,16 +25,6 @@
        android:inputType="textPassword"
        android:layout_width="fill_parent"
        android:layout_height="wrap_content" />
-
-    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:textSize="18sp"
-        android:visibility="gone"
-        android:id="@+id/labelAvatar"
-        android:text="Draw Avatar: "
-        android:layout_alignLeft = "@+id/avatar"/>
-
     <nsl.squarechat.SquareView
         android:layout_gravity="center"
         android:background="@drawable/border_background"
