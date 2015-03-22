@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.LogInCallback;
@@ -68,6 +69,8 @@ public class LoginActivity extends ActionBarActivity {
             }
         });
 
+
+
         final SquareView squareView = (SquareView) findViewById(R.id.avatar);
         Button signup = (Button) findViewById(R.id.signup);
         signup.setOnClickListener(new View.OnClickListener() {
@@ -108,6 +111,8 @@ public class LoginActivity extends ActionBarActivity {
                 }
                 else {
                     squareView.setVisibility(View.VISIBLE);
+                    TextView  labelavatar = (TextView) findViewById(R.id.labelAvatar);
+                    labelavatar.setVisibility(View.VISIBLE);
                 }
             }
         });
