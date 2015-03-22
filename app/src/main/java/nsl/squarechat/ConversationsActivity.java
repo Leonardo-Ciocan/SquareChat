@@ -165,8 +165,7 @@ public class ConversationsActivity extends ActionBarActivity {
                             }
 
                         adapter.notifyDataSetChanged();
-                   }
-                    notification(lastMessage,rootView);
+                    }
                 }
             });
 
@@ -200,6 +199,7 @@ public class ConversationsActivity extends ActionBarActivity {
                 notifyID,
                 mNotifyBuilder.build());
     }
+
     public static Bitmap StringToBitMap(String encodedString){
         try{
             byte [] encodeByte= Base64.decode(encodedString, Base64.DEFAULT);

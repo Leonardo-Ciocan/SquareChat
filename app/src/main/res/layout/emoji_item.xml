@@ -7,6 +7,6 @@
         android:layout_margin="10dp"
         android:layout_gravity="center"
         android:id="@+id/emoji"
-        android:layout_width="180"
-        android:layout_height="180" />
+        android:layout_width="180dp"
+        android:layout_height="180dp" />
 </FrameLayout>

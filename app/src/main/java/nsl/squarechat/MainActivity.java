@@ -2,6 +2,9 @@ package nsl.squarechat;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -234,7 +238,7 @@ public class MainActivity extends ActionBarActivity {
                                             @Override
                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                 ConversationSection section = new ConversationSection(MainActivity.this);
-                                                String data =MainActivity.sharedPref.getString(s.get(position),"");
+                                                String data =MainActivity.sharedPref.getString(s.get(position), "");
                                                 byte[] imageAsBytes = Base64.decode(data.getBytes() , Base64.DEFAULT);
 
                                                 Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
@@ -301,7 +305,10 @@ public class MainActivity extends ActionBarActivity {
                 if(last == parseUsers.size())return;
                 last = parseUsers.size();
                 holder.removeAllViews();
+                Message last = null;
+                Bitmap lastBitmap = null;
                 for (Message m : parseUsers) {
+                    last = m;
                    /* if(m.getTo() != ParseUser.getCurrentUser() &&
                        m.getFrom() != ParseUser.getCurrentUser())
                         continue;*/
@@ -311,9 +318,26 @@ public class MainActivity extends ActionBarActivity {
 
                     Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
 
+                    lastBitmap = b;
                     section.init(b,m.getFrom() == (ParseUser.getCurrentUser()) ?
                             section.ME : section.OTHER);
                     holder.addView(section);
+                }
+
+                if(last.getFrom() != ParseUser.getCurrentUser()){
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    PendingIntent pi = PendingIntent.getActivity(MainActivity.this,0,intent,Intent.FLAG_ACTIVITY_NEW_TASK);
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
+                            .setLargeIcon(lastBitmap)
+                            .setContentTitle(last.getFrom().getUsername())
+                            .setAutoCancel(true)
+                            .setContentTitle("From "+ last.getFrom().getUsername())
+                            .setDefaults(Notification.DEFAULT_SOUND)
+                            .setContentText("You got a message");
+                    mBuilder.setContentIntent(pi);
+                    mBuilder.setSmallIcon(R.drawable.pebble1);
+                    NotificationManager ns = (NotificationManager)getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
+                    ns.notify(0,mBuilder.build());
                 }
 
                 Thread thread = new Thread() {
