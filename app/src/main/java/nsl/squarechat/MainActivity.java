@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,9 +22,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -45,7 +48,7 @@ import java.util.UUID;
 
 
 public class MainActivity extends ActionBarActivity {
-
+    public static SharedPreferences sharedPref ;
     private ActionBarDrawerToggle toggle;
     private SquareView currentSquare;
     private LinearLayout holder;
@@ -56,7 +59,8 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        sharedPref = this.getSharedPreferences(
+                "com.squarechat", this.MODE_PRIVATE);
         //Slidr.attach(this);
 
 
@@ -209,6 +213,62 @@ public class MainActivity extends ActionBarActivity {
                 dialog.show();
             }
         });
+
+        final com.getbase.floatingactionbutton.FloatingActionButton emoji = (com.getbase.floatingactionbutton.FloatingActionButton) findViewById(R.id.emoji);
+        emoji.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                        ListView view = new ListView(MainActivity.this);
+                                        int icount = MainActivity.sharedPref.getInt("emojiCount" , 0);
+                                        final ArrayList<String> s = new ArrayList<String>();
+                                        for(int x =0; x< icount;x++){
+                                            s.add("emoji"+x);
+                                        }
+                                        EmojiAdapter adapter = new EmojiAdapter(MainActivity.this , 0,s);
+
+                                        view.setAdapter(adapter);
+                                        builder.setView(view);
+                                        final Dialog d = builder.create();
+                                        d.show();
+
+                                        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                ConversationSection section = new ConversationSection(MainActivity.this);
+                                                String data =MainActivity.sharedPref.getString(s.get(position),"");
+                                                byte[] imageAsBytes = Base64.decode(data.getBytes() , Base64.DEFAULT);
+
+                                                Bitmap b = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
+
+                                                section.init(b,section.ME);
+                                                holder.addView(section);
+                                                Thread thread = new Thread() {
+                                                    @Override
+                                                    public void run() {
+                                                        try {
+                                                            sleep(100);
+                                                            ((ScrollView) holder.getParent()).fullScroll(ScrollView.FOCUS_DOWN);
+                                                        } catch (InterruptedException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                };
+
+                                                thread.start();
+
+                                                Message newMessage = new Message();
+                                                newMessage.setFrom(ParseUser.getCurrentUser());
+                                                newMessage.setTo(Core.ChattingTo);
+
+                                                newMessage.setSquare(data);
+
+                                                newMessage.saveInBackground();
+                                                d.cancel();
+                                            }
+                                        });
+                                    }
+                                });
         onPostCreate(null);
 
     }
@@ -222,7 +282,6 @@ public class MainActivity extends ActionBarActivity {
         final ParseQuery<Message> innerQuery = ParseQuery.getQuery("Message");
         innerQuery.whereEqualTo("from", ParseUser.getCurrentUser());
         innerQuery.whereEqualTo("to", Core.ChattingTo);
-
 
 
         ArrayList<ParseQuery<Message>> ls = new ArrayList<>();
