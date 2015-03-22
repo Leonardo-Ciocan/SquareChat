@@ -81,21 +81,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitle("Chatting with " + Core.ChattingTo.getUsername());
 
         setSupportActionBar(toolbar);
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-        toggle = new ActionBarDrawerToggle(MainActivity.this, drawerLayout, R.string.abc_action_mode_done, R.string.abc_action_mode_done) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-
-                super.onDrawerClosed(drawerView);
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-            }
-        };
-        toggle.setDrawerIndicatorEnabled(true);
-        drawerLayout.setDrawerListener(toggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         currentSquare = (SquareView) findViewById(R.id.currentSquare);
 
@@ -307,8 +293,7 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (toggle.onOptionsItemSelected(item))
-            return true;
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
