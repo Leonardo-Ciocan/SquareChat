@@ -335,7 +335,7 @@ public class MainActivity extends ActionBarActivity {
                             .setDefaults(Notification.DEFAULT_SOUND)
                             .setContentText("You got a message");
                     mBuilder.setContentIntent(pi);
-                    mBuilder.setSmallIcon(R.drawable.pebble1);
+                    mBuilder.setSmallIcon(R.drawable.ic_launcher);
                     NotificationManager ns = (NotificationManager)getSystemService(MainActivity.this.NOTIFICATION_SERVICE);
                     ns.notify(0,mBuilder.build());
                 }
