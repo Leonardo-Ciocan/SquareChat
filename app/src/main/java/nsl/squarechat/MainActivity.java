@@ -43,7 +43,6 @@ import java.util.List;
 
 import java.util.UUID;
 
-
 public class MainActivity extends ActionBarActivity {
 
     private ActionBarDrawerToggle toggle;
